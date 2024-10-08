@@ -69,6 +69,7 @@ async function downloadSubscription(req, res) {
         produceType,
         includeUnsupportedProxy,
         resultFormat,
+        proxy,
     } = req.query;
     let $options = {};
     if (req.query.$options) {
@@ -91,6 +92,10 @@ async function downloadSubscription(req, res) {
     if (url) {
         url = decodeURIComponent(url);
         $.info(`指定远程订阅 URL: ${url}`);
+    }
+    if (proxy) {
+        proxy = decodeURIComponent(proxy);
+        $.info(`指定远程订阅使用代理/策略 proxy: ${proxy}`);
     }
     if (ua) {
         ua = decodeURIComponent(ua);
@@ -135,6 +140,7 @@ async function downloadSubscription(req, res) {
                     'include-unsupported-proxy': includeUnsupportedProxy,
                 },
                 $options,
+                proxy,
             });
 
             if (
@@ -175,7 +181,7 @@ async function downloadSubscription(req, res) {
                             url,
                             $arguments.flowUserAgent,
                             undefined,
-                            sub.proxy,
+                            proxy || sub.proxy,
                             $arguments.flowUrl,
                         );
                         if (flowInfo) {
@@ -264,6 +270,7 @@ async function downloadCollection(req, res) {
         produceType,
         includeUnsupportedProxy,
         resultFormat,
+        proxy,
     } = req.query;
 
     let $options = {};
@@ -283,6 +290,11 @@ async function downloadCollection(req, res) {
             }
         }
         $.info(`传入 $options: ${JSON.stringify($options)}`);
+    }
+
+    if (proxy) {
+        proxy = decodeURIComponent(proxy);
+        $.info(`指定远程订阅使用代理/策略 proxy: ${proxy}`);
     }
 
     if (ignoreFailedRemoteSub != null && ignoreFailedRemoteSub !== '') {
@@ -311,6 +323,7 @@ async function downloadCollection(req, res) {
                     'include-unsupported-proxy': includeUnsupportedProxy,
                 },
                 $options,
+                proxy,
             });
 
             // forward flow header from the first subscription in this collection
@@ -355,7 +368,7 @@ async function downloadCollection(req, res) {
                                 url,
                                 $arguments.flowUserAgent,
                                 undefined,
-                                sub.proxy,
+                                proxy || sub.proxy || collection.proxy,
                                 $arguments.flowUrl,
                             );
                             if (flowInfo) {
